@@ -14,6 +14,12 @@ pub struct ModuleRegistry {
     modules: HashMap<String, Module>,
 }
 
+impl Default for ModuleRegistry {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ModuleRegistry {
     pub fn new() -> Self {
         Self {
