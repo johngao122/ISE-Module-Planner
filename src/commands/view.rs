@@ -69,15 +69,13 @@ impl ViewCommand {
         println!("\n{}", "📚 ACADEMIC PLAN SUMMARY".bold());
         println!("{}:{} {}", "Plan Name".bold(), " ".repeat(10), plan.name);
         println!(
-            "{}:{} {}",
+            "{}:  {}",
             "Target Graduation".bold(),
-            " ",
             plan.target_graduation
         );
         println!(
-            "{}:{} {} units",
+            "{}:  {} units",
             "Total Planned Units".bold(),
-            " ",
             plan.total_units()
         );
 
@@ -166,9 +164,8 @@ impl ViewCommand {
         println!("\n{}", "📚 ACADEMIC PLAN: DETAILED VIEW".bold());
         println!("{}:{} {}", "Plan Name".bold(), " ".repeat(10), plan.name);
         println!(
-            "{}:{} {}",
+            "{}:  {}",
             "Target Graduation".bold(),
-            " ",
             plan.target_graduation
         );
 

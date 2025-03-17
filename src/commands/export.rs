@@ -1,4 +1,4 @@
-use crate::api::{DefaultNusmodsApi, NusmodsApi};
+use crate::api::NusmodsApi;
 use crate::models::Plan;
 use crate::storage::Storage;
 use anyhow::{anyhow, Result};

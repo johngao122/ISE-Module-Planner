@@ -174,11 +174,11 @@ impl EditCommand {
                 s_u_option: false,
             };
 
-            plan.semesters[sem_index].modules.push(planned_module);
-
-            if let Some(credits_str) = selected_module.module_credit.parse::<u32>().ok() {
+            if let Ok(credits_str) = selected_module.module_credit.parse::<u32>() {
                 plan.semesters[sem_index].total_units += credits_str;
             }
+
+            plan.semesters[sem_index].modules.push(planned_module);
 
             println!(
                 "✅ Added {} to {} Semester {}",
@@ -186,47 +186,45 @@ impl EditCommand {
                 plan.semesters[sem_index].year,
                 plan.semesters[sem_index].semester
             );
-        } else {
-            if let Some(module) = registry.get_module(&module_code) {
-                let is_available =
-                    self.check_module_availability(module, plan.semesters[sem_index].semester);
+        } else if let Some(module) = registry.get_module(&module_code) {
+            let is_available =
+                self.check_module_availability(module, plan.semesters[sem_index].semester);
 
-                if !is_available {
-                    let proceed = Confirm::new()
-                        .with_prompt(format!(
-                            "⚠️ {} is not typically offered in Semester {}. Add anyway?",
-                            module.module_code, plan.semesters[sem_index].semester
-                        ))
-                        .default(false)
-                        .interact()?;
+            if !is_available {
+                let proceed = Confirm::new()
+                    .with_prompt(format!(
+                        "⚠️ {} is not typically offered in Semester {}. Add anyway?",
+                        module.module_code, plan.semesters[sem_index].semester
+                    ))
+                    .default(false)
+                    .interact()?;
 
-                    if !proceed {
-                        return Ok(());
-                    }
+                if !proceed {
+                    return Ok(());
                 }
-
-                let planned_module = PlannedModule {
-                    module_code: module.module_code.clone(),
-                    status: ModuleStatus::Planned,
-                    grade: None,
-                    s_u_option: false,
-                };
-
-                plan.semesters[sem_index].modules.push(planned_module);
-
-                if let Some(credits) = module.module_credit.parse::<u32>().ok() {
-                    plan.semesters[sem_index].total_units += credits;
-                }
-
-                println!(
-                    "✅ Added {} to {} Semester {}",
-                    module.module_code,
-                    plan.semesters[sem_index].year,
-                    plan.semesters[sem_index].semester
-                );
-            } else {
-                println!("⚠️ Module '{}' not found in registry", module_code);
             }
+
+            let planned_module = PlannedModule {
+                module_code: module.module_code.clone(),
+                status: ModuleStatus::Planned,
+                grade: None,
+                s_u_option: false,
+            };
+
+            plan.semesters[sem_index].modules.push(planned_module);
+
+            if let Ok(credits) = module.module_credit.parse::<u32>() {
+                plan.semesters[sem_index].total_units += credits;
+            }
+
+            println!(
+                "✅ Added {} to {} Semester {}",
+                module.module_code,
+                plan.semesters[sem_index].year,
+                plan.semesters[sem_index].semester
+            );
+        } else {
+            println!("⚠️ Module '{}' not found in registry", module_code);
         }
 
         Ok(())
@@ -289,7 +287,7 @@ impl EditCommand {
             let module_code = plan.semesters[sem_index].modules[index].module_code.clone();
 
             if let Some(module) = registry.get_module(&module_code) {
-                if let Some(credits) = module.module_credit.parse::<u32>().ok() {
+                if let Ok(credits) = module.module_credit.parse::<u32>() {
                     plan.semesters[sem_index].total_units = plan.semesters[sem_index]
                         .total_units
                         .saturating_sub(credits);
@@ -360,7 +358,7 @@ impl EditCommand {
             if let Some(registry_module) =
                 registry.get_module(&plan.semesters[source_index].modules[index].module_code)
             {
-                if let Some(credits) = registry_module.module_credit.parse::<u32>().ok() {
+                if let Ok(credits) = registry_module.module_credit.parse::<u32>() {
                     plan.semesters[source_index].total_units = plan.semesters[source_index]
                         .total_units
                         .saturating_sub(credits);
@@ -378,7 +376,7 @@ impl EditCommand {
 
         for module in modules_to_move {
             if let Some(registry_module) = registry.get_module(&module.module_code) {
-                if let Some(credits) = registry_module.module_credit.parse::<u32>().ok() {
+                if let Ok(credits) = registry_module.module_credit.parse::<u32>() {
                     plan.semesters[target_index].total_units += credits;
                 }
             }
